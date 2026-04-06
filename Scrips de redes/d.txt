@@ -1,0 +1,110 @@
+en
+conf t
+hostname --
+
+int G0/0
+ip address 192.168.40.1 255.255.255.0
+no shu
+
+int se 0/0/0
+ip address 192.168.20.2 255.255.255.0
+no shu
+
+"establecer la velocidad de transmisión en una interfaz serie"
+clock rate 9600
+
+no ip route 192.168.40.0 255.255.255.0 192.168.20.2
+no ip route 192.168.10.0 255.255.255.0 192.168.20.1
+no ip route 192.168.30.0 255.255.255.0 192.168.20.1
+
+R0
+router ospf 10
+router-id 1.1.1.1
+network 192.168.10.0 0.0.0.255 area 0
+network 192.168.20.0 0.0.0.255 area 0
+network 192.168.30.0 0.0.0.255 area 0
+passive-interface g0/0
+passive-interface g0/1
+exit
+
+R1
+router ospf 10
+router-id 2.2.2.2
+network 192.168.40.0 0.0.0.255 area 0
+network 192.168.20.0 0.0.0.255 area 0
+passive-interface g0/0
+exit
+
+R1
+access-list 20 permit 192.168.10.0 0.0.0.255
+access-list 20 permit 192.168.20.0 0.0.0.3
+access-list 20 permit host 192.168.10
+access-list 20 permit any
+int s0/0/0
+	ip access-group 20 in
+	exit
+------------------------------------NUMERADAS----------------------------------
+" Comando ALC estándar numerada IPv4 "
+access-list (1 a 99 o 1300 a 1999) {deny | permit | remark text} source [wildcard] [log]
+
+deny-----------Esto deniega el acceso si la condición coincide.
+permit---------Esto permite el acceso si la condición coincide.
+remark text----(Comentarios) Se agrega una entrada de texto para fines de documentación es opcional.
+
+Soucrce--------Esto identifica la red de origen o la dirección de host que se va a filtrar
+		any para especificar todas las redes
+		host para identificar una dirección IP específica(o sin escribir host, solo la ip)
+
+Wildcard para aplicar al origen. Si se omite, se asume una máscara 0.0.0.0 predeterminada.
+		ejemplo---permit 192.168.20.0 0.0.0.255  || permit host 192.168.10.10
+
+access-list (100 a 199 o 2000 a 2699) {deny | permit | remark text} (protocol) (source) [wildcard] [operator {port}] destination destination-wildcard [operator {port}] [established] [log]
+
+protocol--------Nombre o número de un protocolo de Internet
+destination-----Esto identifica la red de destino o la dirección de host que se va a filtrar.Any o host
+port------------Nombre o numero del puerto(opcional)
+established-----Sólo para el protocolo TCP
+
+" ACL extendido  si el puerto del host de destino es 80"http"
+access-list 100 permit tcp 192.168.10.0 0.0.0.255 any eq [www || 80]
+
+"Aplicar ACL 10 en la salida en la int Serial 0/1/0.
+	interface Serial 0/1/0
+		ip access-group 10 {in || out}
+in--entrada
+out-salida
+----------------------------------------NOMBRADAS---------------------------------------------
+" Comando ALC estándar Nombrada IPv4 "
+ ip access-list (standard||extended) (Nombre)
+
+Nombre-----Deben ser unicos y distinge mayusculas y minusculas
+
+access-list extended Filtro
+	{deny | permit | remark text} tcp 192.168.10.0 0.0.0.255 any eq htp-data
+
+deny-----------Esto deniega el acceso si la condición coincide.
+permit---------Esto permite el acceso si la condición coincide.
+remark text----(Comentarios) Se agrega una entrada de texto para fines de documentación es opcional.
+
+"Aplicar ACL nombrada en la salida en la int Serial 0/1/0.
+	interface Serial 0/1/0
+		ip access-group (nombre) {in || out}
+in--entrada
+out-salida
+------------------------------------------SHOWS---------------------------------------------------
+(show run y show access-lists)       	       para ver las ACL configuradas actualmente
+(show run | section access-list)      	       para revisar la ACL en la configuración, mas detalle
+(show run | section ip access-list)            para revisar la ACL en la configuración, Nombrada comunmente
+(show ip int Se 0/1/0 | include access list)   para verificar si una interfaz tiene una ACL 
+
+ip access-list standard-------------sobrescribir con el mismo número de secuencia que el de una instrucción existente
+clear access-list counters----------para borrar las estadísticas de ACL
+
+"comando para palicar ACL de acceso Remoto(ssh-vty)"
+	access-class {access-list-number | access-list-name} { in | out } 
+
+line vty 0 4
+	login local
+	transport input ssh
+	access-class ADMIN-HOST in
+	end
