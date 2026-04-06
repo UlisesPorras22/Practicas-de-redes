@@ -1,0 +1,72 @@
+R1
+
+en
+conf t
+hostname R1
+
+int G0/0
+ip address 192.168.1.1 255.255.255.0
+no shu
+
+int lo1
+ip address 192.168.2.1 255.255.255.0
+no shu
+
+int se 0/0/0
+ip address 172.16.1.1 255.255.255.252
+no shu
+exit
+
+router ospf 10
+router-id 1.1.1.1
+network 192.168.1.0 0.0.0.255 area 0
+network 192.168.2.0 0.0.0.255 area 0
+network 172.16.1.0 0.0.0.3 area 0
+passive-interface g0/0
+passive-interface g0/1
+exit
+
+R2
+
+en
+conf t
+hostname R2
+
+int G0/0
+ip address 192.168.3.1 255.255.255.0
+no shu
+
+int G0/1
+ip address 192.168.4.1 255.255.255.0
+no shu
+
+int se 0/0/0
+ip address 172.16.1.2 255.255.255.252
+no shu
+exit
+
+router ospf 10
+router-id 2.2.2.2
+network 192.168.3.0 0.0.0.255 area 0
+network 192.168.4.0 0.0.0.255 area 0
+network 172.16.1.0 0.0.0.3 area 0
+passive-interface g0/0
+passive-interface g0/1
+exit
+
+-----------------------------------
+access-list 1 deny host 192.168.3.77
+access-list 1 permit 192.168.3.0 0.0.0.255
+access-list 1 permit 192.168.4.0 0.0.0.255
+access-list 1 permit 192.168.1.0 0.0.0.255
+
+int s0/0/0
+	ip access-group 1 in
+	exit
+
+(show run y show access-lists)       	       para ver las ACL configuradas actualmente
+(show run | section access-list)      	       para revisar la ACL en la configuración, mas detalle
+ show running-config | include access-list
+(show run | section ip access-list)            para revisar la ACL en la configuración, Nombrada comunmente
+(show ip int Se 0/0/0 | include access list)   para verificar si una interfaz tiene una ACL 
+

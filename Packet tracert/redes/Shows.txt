@@ -1,0 +1,91 @@
+***********************Mostrar***************************
+
+Muestra la configuración de inicio actual
+	how startup-config
+
+nombre de host del dispositivo
+	show running-config | section hostname
+
+configuraciones relacionadas con direcciones IP
+	show running-config | section ip
+
+contraseña cifrada
+	show running-config | section enable secret
+
+contraseña no cifrada
+	show running-config | section enable password
+
+sección relacionada con las líneas virtuales
+	show running-config | section line vty
+
+versión de software, hardware y configuración del dispositivo
+	show version
+
+verificar que el switch sea compatible con SSH
+	show ip ssh
+
+interfaces IP del dispositivo, direcciones IP y estados de enlace.
+	show ip interface br
+	show ipv6 interface brief
+
+Vlans del dispotivo
+	show vlan brief
+
+Ver interfaces troncales
+	show int trunk
+
+mensaje de bienvenida 
+	show running-config | section banner motd
+
+línea de consola 0
+	show running-config | section line con 0
+
+ dominio IP del dispositivo.
+	show running-config | section ip domain
+
+configuración de usuarios y sus privilegios.
+	show running-config | section user
+
+tabla de direcciones MAC dinámicas
+	show mac address-table dynamic
+
+Ver en qué está configurado el archivo de arranque IOS actual.
+	show boot 
+
+ver propiedades predeterminadas del puerto
+	show interface gig1/0/6
+
+contenido del directorio flash
+	Show flash
+	dir flash
+
+Muestra la configuración actual en ejecución
+	show history
+	show running-config
+
+examinar la configuración de auto-MDIX para una interfaz específica
+	show controllers ethernet-controller fa0/1 phy | include MDIX
+
+ver la configuracion del STP(puertos blockeados y no blokeados)
+	show spanning-tree vlan1
+
+ver la configuración de EtherChannel.
+	show etherchannel summary
+
+muestra el estado general de la interfaz de canal de puertos
+	show interfaces port-channel 1
+
+Verifique la configuración de canalización de puerto
+	show run | begin interface port-channel
+
+ver puerta de enlace
+	show running-config | section include default-gateway
+
+Muestra los comandos DHCPv4 configurados en el router.
+	show running-config | section dhcp
+
+Muestra una lista de todos los enlaces de direcciones IPv4 a direcciones MAC proporcionados por el servicio DHCPv4.
+	show ip dhcp binding
+
+Muestra información de conteo con respecto a la cantidad de mensajes DHCPv4 que han sido enviados y recibidos.
+	show ip dhcp server statistics
